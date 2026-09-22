@@ -11,33 +11,44 @@ import type {
   UpdatePantryInput,
   User
 } from "./types";
-import type {
-  CreateHouseholdInput,
-  HouseholdSettings,
-  ProfileSettings,
-  UpdateProfileInput
-} from "./onboarding-types";
 
 export class ApiError extends Error {
-  constructor(public status: number, public code: string, message: string, public correlationId?: string) {
+  constructor(
+    public status: number,
+    public code: string,
+    message: string,
+    public correlationId?: string
+  ) {
     super(message);
     this.name = "ApiError";
   }
 }
 
 function headers(hasBody = false): HeadersInit {
-  const result: Record<string, string> = { Accept: "application/json", "X-Client-Version": publicEnv.appVersion };
+  const result: Record<string, string> = {
+    Accept: "application/json",
+    "X-Client-Version": publicEnv.appVersion
+  };
   if (hasBody) result["Content-Type"] = "application/json";
-  if (publicEnv.allowDevAuth && publicEnv.deployment !== "production") result.Authorization = "Bearer dev-token";
+  if (publicEnv.allowDevAuth && publicEnv.deployment !== "production") {
+    result.Authorization = "Bearer dev-token";
+  }
   return result;
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   let response: Response;
   const requestHeaders = new Headers(headers(Boolean(init.body)));
-  if (init.headers) new Headers(init.headers).forEach((value, key) => requestHeaders.set(key, value));
+  if (init.headers) {
+    new Headers(init.headers).forEach((value, key) => requestHeaders.set(key, value));
+  }
   try {
-    response = await fetch(`${publicEnv.apiBaseUrl}${path}`, { ...init, credentials: "include", headers: requestHeaders, cache: "no-store" });
+    response = await fetch(`${publicEnv.apiBaseUrl}${path}`, {
+      ...init,
+      credentials: "include",
+      headers: requestHeaders,
+      cache: "no-store"
+    });
   } catch {
     throw new ApiError(0, "API_UNAVAILABLE", "PantryPilot API is unavailable. Confirm the API is running at localhost:3001.");
   }
@@ -45,7 +56,12 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     const error = (body as Partial<ApiErrorBody>).error;
-    throw new ApiError(response.status, error?.code ?? "REQUEST_FAILED", error?.message ?? "The request could not be completed.", error?.correlationId ?? response.headers.get("x-correlation-id") ?? undefined);
+    throw new ApiError(
+      response.status,
+      error?.code ?? "REQUEST_FAILED",
+      error?.message ?? "The request could not be completed.",
+      error?.correlationId ?? response.headers.get("x-correlation-id") ?? undefined
+    );
   }
   return body as T;
 }
@@ -62,10 +78,5 @@ export const api = {
   createGroceryItem: (householdId: string, listId: string, input: CreateGroceryItemInput) => request<GroceryItem>(`/households/${householdId}/grocery-lists/${listId}/items`, { method: "POST", body: JSON.stringify(input) }),
   updateGroceryItem: (householdId: string, listId: string, itemId: string, input: UpdateGroceryItemInput) => request<GroceryItem>(`/households/${householdId}/grocery-lists/${listId}/items/${itemId}`, { method: "PATCH", body: JSON.stringify(input) }),
   deleteGroceryItem: (householdId: string, listId: string, itemId: string, version: number) => request<void>(`/households/${householdId}/grocery-lists/${listId}/items/${itemId}?version=${version}`, { method: "DELETE" }),
-  updateGroceryList: (householdId: string, listId: string, input: { status?: "ACTIVE" | "COMPLETED" | "ARCHIVED"; name?: string; version: number }) => request<GroceryList>(`/households/${householdId}/grocery-lists/${listId}`, { method: "PATCH", body: JSON.stringify(input) }),
-  profile: () => request<ProfileSettings>("/me/profile"),
-  updateProfile: (input: UpdateProfileInput) => request<ProfileSettings>("/me/profile", { method: "PATCH", body: JSON.stringify(input) }),
-  createHousehold: (input: CreateHouseholdInput) => request<{ household: HouseholdSettings; profile: ProfileSettings }>("/households", { method: "POST", body: JSON.stringify(input) }),
-  household: (householdId: string) => request<HouseholdSettings>(`/households/${householdId}`),
-  updateHousehold: (householdId: string, input: { name?: string; timeZone?: string; version: number }) => request<HouseholdSettings>(`/households/${householdId}`, { method: "PATCH", body: JSON.stringify(input) })
+  updateGroceryList: (householdId: string, listId: string, input: { status?: "ACTIVE" | "COMPLETED" | "ARCHIVED"; name?: string; version: number }) => request<GroceryList>(`/households/${householdId}/grocery-lists/${listId}`, { method: "PATCH", body: JSON.stringify(input) })
 };

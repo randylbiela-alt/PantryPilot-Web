@@ -1,0 +1,5 @@
+import { render,screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { expect,it,vi } from "vitest";
+import { OnboardingWizard } from "./onboarding-wizard";
+it("collects household onboarding data",async()=>{const user=userEvent.setup();const complete=vi.fn().mockResolvedValue(undefined);render(<OnboardingWizard onComplete={complete}/>);await user.type(screen.getByLabelText("Household name"),"Biela Household");await user.click(screen.getByRole("button",{name:"Continue"}));await user.clear(screen.getByLabelText("Household size"));await user.type(screen.getByLabelText("Household size"),"4");await user.type(screen.getByLabelText("Weekly grocery budget"),"200");await user.click(screen.getByRole("button",{name:"Continue"}));await user.click(screen.getByRole("button",{name:"Continue"}));await user.click(screen.getByRole("button",{name:"Create household"}));expect(complete).toHaveBeenCalledWith(expect.objectContaining({name:"Biela Household",householdSize:4,weeklyBudget:200}));});
