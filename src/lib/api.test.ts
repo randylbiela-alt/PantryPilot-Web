@@ -1,0 +1,4 @@
+﻿import { describe,expect,it,vi } from "vitest"; import { api } from "./api";
+describe("typed API client",()=>{it("adds local dev auth and parses session",async()=>{const fetchMock=vi.spyOn(globalThis,"fetch").mockResolvedValue(new Response(JSON.stringify({user:{id:"1",email:"demo@pantrypilot.test",displayName:"Demo"}}),{status:200,headers:{"Content-Type":"application/json"}}));const result=await api.session();expect(result.user?.email).toBe("demo@pantrypilot.test");expect(fetchMock).toHaveBeenCalledOnce()});it("normalizes API errors",async()=>{vi.spyOn(globalThis,"fetch").mockResolvedValue(new Response(JSON.stringify({error:{code:"VERSION_CONFLICT",message:"Changed",correlationId:"abc"}}),{status:409,headers:{"Content-Type":"application/json"}}));await expect(api.bootstrap()).rejects.toMatchObject({status:409,code:"VERSION_CONFLICT",correlationId:"abc"})})});
+
+
