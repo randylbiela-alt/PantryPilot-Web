@@ -1,16 +1,42 @@
 import { publicEnv } from "./env";
-import type { ApiErrorBody, Bootstrap, CreatePantryInput, PantryItem, UpdatePantryInput, User } from "./types";
+import type {
+  ApiErrorBody,
+  Bootstrap,
+  CreateGroceryItemInput,
+  CreatePantryInput,
+  GroceryItem,
+  GroceryList,
+  PantryItem,
+  UpdateGroceryItemInput,
+  UpdatePantryInput,
+  User
+} from "./types";
 
 export class ApiError extends Error {
-  constructor(public status:number,public code:string,message:string,public correlationId?:string){super(message);this.name="ApiError";}
+  constructor(
+    public status: number,
+    public code: string,
+    message: string,
+    public correlationId?: string
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
 }
-function headers(hasBody=false):HeadersInit {
-  const h:Record<string,string>={Accept:"application/json","X-Client-Version":publicEnv.appVersion};
-  if(hasBody)h["Content-Type"]="application/json";
-  if(publicEnv.allowDevAuth&&publicEnv.deployment!=="production")h.Authorization="Bearer dev-token";
-  return h;
+
+function headers(hasBody = false): HeadersInit {
+  const result: Record<string, string> = {
+    Accept: "application/json",
+    "X-Client-Version": publicEnv.appVersion
+  };
+  if (hasBody) result["Content-Type"] = "application/json";
+  if (publicEnv.allowDevAuth && publicEnv.deployment !== "production") {
+    result.Authorization = "Bearer dev-token";
+  }
+  return result;
 }
-async function request<T>(path:string,init:RequestInit={}):Promise<T>{
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   let response: Response;
   const requestHeaders = new Headers(headers(Boolean(init.body)));
   if (init.headers) {
@@ -23,17 +49,34 @@ async function request<T>(path:string,init:RequestInit={}):Promise<T>{
       headers: requestHeaders,
       cache: "no-store"
     });
+  } catch {
+    throw new ApiError(0, "API_UNAVAILABLE", "PantryPilot API is unavailable. Confirm the API is running at localhost:3001.");
   }
-  catch { throw new ApiError(0,"API_UNAVAILABLE","PantryPilot API is unavailable. Confirm the API is running at localhost:3001."); }
-  if(response.status===204)return undefined as T;
-  const body=await response.json().catch(()=>({}));
-  if(!response.ok){const e=(body as Partial<ApiErrorBody>).error;throw new ApiError(response.status,e?.code??"REQUEST_FAILED",e?.message??"The request could not be completed.",e?.correlationId??response.headers.get("x-correlation-id")??undefined);}
+  if (response.status === 204) return undefined as T;
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = (body as Partial<ApiErrorBody>).error;
+    throw new ApiError(
+      response.status,
+      error?.code ?? "REQUEST_FAILED",
+      error?.message ?? "The request could not be completed.",
+      error?.correlationId ?? response.headers.get("x-correlation-id") ?? undefined
+    );
+  }
   return body as T;
 }
-export const api={
-  session:()=>request<{user:User|null}>("/auth/session"), signOut:()=>request<void>("/auth/sign-out",{method:"POST"}), bootstrap:()=>request<Bootstrap>("/bootstrap"),
-  listPantry:(householdId:string)=>request<PantryItem[]>(`/households/${householdId}/pantry`),
-  createPantry:(householdId:string,input:CreatePantryInput)=>request<PantryItem>(`/households/${householdId}/pantry`,{method:"POST",body:JSON.stringify(input)}),
-  updatePantry:(householdId:string,itemId:string,input:UpdatePantryInput)=>request<PantryItem>(`/households/${householdId}/pantry/${itemId}`,{method:"PATCH",body:JSON.stringify(input)}),
-  deletePantry:(householdId:string,itemId:string,version:number)=>request<void>(`/households/${householdId}/pantry/${itemId}?version=${version}`,{method:"DELETE"})
+
+export const api = {
+  session: () => request<{ user: User | null }>("/auth/session"),
+  signOut: () => request<void>("/auth/sign-out", { method: "POST" }),
+  bootstrap: () => request<Bootstrap>("/bootstrap"),
+  listPantry: (householdId: string) => request<PantryItem[]>(`/households/${householdId}/pantry`),
+  createPantry: (householdId: string, input: CreatePantryInput) => request<PantryItem>(`/households/${householdId}/pantry`, { method: "POST", body: JSON.stringify(input) }),
+  updatePantry: (householdId: string, itemId: string, input: UpdatePantryInput) => request<PantryItem>(`/households/${householdId}/pantry/${itemId}`, { method: "PATCH", body: JSON.stringify(input) }),
+  deletePantry: (householdId: string, itemId: string, version: number) => request<void>(`/households/${householdId}/pantry/${itemId}?version=${version}`, { method: "DELETE" }),
+  listGroceryLists: (householdId: string) => request<GroceryList[]>(`/households/${householdId}/grocery-lists`),
+  createGroceryItem: (householdId: string, listId: string, input: CreateGroceryItemInput) => request<GroceryItem>(`/households/${householdId}/grocery-lists/${listId}/items`, { method: "POST", body: JSON.stringify(input) }),
+  updateGroceryItem: (householdId: string, listId: string, itemId: string, input: UpdateGroceryItemInput) => request<GroceryItem>(`/households/${householdId}/grocery-lists/${listId}/items/${itemId}`, { method: "PATCH", body: JSON.stringify(input) }),
+  deleteGroceryItem: (householdId: string, listId: string, itemId: string, version: number) => request<void>(`/households/${householdId}/grocery-lists/${listId}/items/${itemId}?version=${version}`, { method: "DELETE" }),
+  updateGroceryList: (householdId: string, listId: string, input: { status?: "ACTIVE" | "COMPLETED" | "ARCHIVED"; name?: string; version: number }) => request<GroceryList>(`/households/${householdId}/grocery-lists/${listId}`, { method: "PATCH", body: JSON.stringify(input) })
 };
