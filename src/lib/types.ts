@@ -55,6 +55,7 @@ export type Bootstrap = {
   pantry: PantryItem[];
   groceryList: GroceryList;
   mealPlan: unknown | null;
+  onboardingRequired?: boolean;
 };
 
 export type ApiErrorBody = {
