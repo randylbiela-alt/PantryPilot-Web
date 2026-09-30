@@ -1,4 +1,4 @@
-﻿import { publicEnv } from "./env";
+import { publicEnv } from "./env";
 import type {
   ApiErrorBody,
   Bootstrap,
@@ -27,7 +27,9 @@ export class ApiError extends Error {
 
 function headers(hasBody = false): HeadersInit {
   const result: Record<string, string> = { Accept: "application/json", "X-Client-Version": publicEnv.appVersion };
-  if (hasBody) result["Content-Type"] = "application/json";return result;
+  if (hasBody) result["Content-Type"] = "application/json";
+  if (publicEnv.allowDevAuth && publicEnv.deployment !== "production") result.Authorization = "Bearer dev-token";
+  return result;
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -50,20 +52,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export const api = {
   session: () => request<{ user: User | null }>("/auth/session"),
-  devSession: () => {
-    if (!publicEnv.allowDevAuth || publicEnv.deployment === "production") {
-      throw new ApiError(403, "DEV_AUTH_DISABLED", "Development sign-in is disabled.");
-    }
-    return request<{ user: User }>("/auth/dev-session", { method: "POST", body: JSON.stringify({}) });
-  },
-  signOut: () => request<void>("/auth/sign-out", {
-    method: "POST"
-  }),
-
-  signOutAll: () =>
-    request<void>("/auth/sign-out-all", {
-      method: "POST"
-    }),
+  signOut: () => request<void>("/auth/sign-out", { method: "POST" }),
   bootstrap: () => request<Bootstrap>("/bootstrap"),
   listPantry: (householdId: string) => request<PantryItem[]>(`/households/${householdId}/pantry`),
   createPantry: (householdId: string, input: CreatePantryInput) => request<PantryItem>(`/households/${householdId}/pantry`, { method: "POST", body: JSON.stringify(input) }),
@@ -80,6 +69,3 @@ export const api = {
   household: (householdId: string) => request<HouseholdSettings>(`/households/${householdId}`),
   updateHousehold: (householdId: string, input: { name?: string; timeZone?: string; version: number }) => request<HouseholdSettings>(`/households/${householdId}`, { method: "PATCH", body: JSON.stringify(input) })
 };
-
-
-

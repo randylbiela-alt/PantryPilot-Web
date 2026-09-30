@@ -54,7 +54,7 @@ export const api = {
     if (!publicEnv.allowDevAuth || publicEnv.deployment === "production") {
       throw new ApiError(403, "DEV_AUTH_DISABLED", "Development sign-in is disabled.");
     }
-    return request<{ user: User }>("/auth/dev-session", { method: "POST", body: JSON.stringify({}) });
+    return request<{ user: User }>("/auth/dev-session", { method: "POST" });
   },
   signOut: () => request<void>("/auth/sign-out", {
     method: "POST"
@@ -80,6 +80,5 @@ export const api = {
   household: (householdId: string) => request<HouseholdSettings>(`/households/${householdId}`),
   updateHousehold: (householdId: string, input: { name?: string; timeZone?: string; version: number }) => request<HouseholdSettings>(`/households/${householdId}`, { method: "PATCH", body: JSON.stringify(input) })
 };
-
 
 

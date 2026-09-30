@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ClipboardList, LogOut, Pencil, Plus, Search, ShoppingBasket, Trash2, UserRound, Wheat } from "lucide-react";
@@ -31,14 +31,10 @@ export function PantryPilotApp() {
     setStatus("loading");
     setError(null);
     try {
-      let session = await api.session();
-      if (!session.user && publicEnv.allowDevAuth && publicEnv.deployment !== "production") {
-        await api.devSession();
-        session = await api.session();
-      }
+      const session = await api.session();
       if (!session.user) {
         setStatus("error");
-        setError(new ApiError(401, "AUTHENTICATION_REQUIRED", "Sign-in is required."));
+        setError(new ApiError(401, "AUTHENTICATION_REQUIRED", "Development sign-in is unavailable."));
         return;
       }
       setData(await api.bootstrap());
@@ -165,7 +161,7 @@ export function PantryPilotApp() {
     {tab === "grocery" ? (
       <GroceryListScreen list={data.groceryList} actions={{ createItem: createGroceryItem, updateItem: updateGroceryItem, deleteItem: deleteGroceryItem, refresh: refreshGrocery, completeList: completeGroceryList }} />
     ) : tab === "profile" ? (
-      profileSettings && householdSettings ? <ProfileScreen profile={profileSettings} household={householdSettings} onSignOutAllDevices={async () => { await api.signOutAll(); setData(null); setStatus("signedout"); }} onSave={async values => {
+      profileSettings && householdSettings ? <ProfileScreen profile={profileSettings} household={householdSettings} onSave={async values => {
         const updatedHousehold = await api.updateHousehold(data.activeHouseholdId!, { name: values.name, timeZone: values.timeZone, version: values.householdVersion });
         const updatedProfile = await api.updateProfile({ householdSize: values.householdSize, weeklyBudget: values.weeklyBudget, dietaryPreference: values.dietaryPreference, timeZone: values.timeZone, version: values.profileVersion });
         setHouseholdSettings(updatedHousehold);
@@ -174,13 +170,13 @@ export function PantryPilotApp() {
       }} /> : <Loading label="Loading profile" />
     ) : (
       <>
-        <header className="flex items-start justify-between"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#486957]">{data.households[0]?.name ?? "PantryPilot"}</p><h1 className="mt-1 text-4xl font-black">Your pantry</h1><p className="mt-2 text-sm text-[#6d7d74]">Server-synced inventory Â· {data.user.displayName ?? data.user.email}</p></div><button aria-label="Sign out" onClick={signOut} className="rounded-xl border bg-white p-3"><LogOut size={18} /></button></header>
+        <header className="flex items-start justify-between"><div><p className="text-xs font-black uppercase tracking-[.18em] text-[#486957]">{data.households[0]?.name ?? "PantryPilot"}</p><h1 className="mt-1 text-4xl font-black">Your pantry</h1><p className="mt-2 text-sm text-[#6d7d74]">Server-synced inventory · {data.user.displayName ?? data.user.email}</p></div><button aria-label="Sign out" onClick={signOut} className="rounded-xl border bg-white p-3"><LogOut size={18} /></button></header>
         <div className="mt-5 flex gap-2"><label className="relative flex-1"><span className="sr-only">Search pantry</span><Search className="absolute left-3 top-3 text-[#6d7d74]" size={18} /><Input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search pantry" className="pl-10" /></label><Button onClick={() => setDialog({ mode: "create" })} aria-label="Add pantry item"><Plus size={18} /></Button></div>
-        <main className="mt-5">{filtered.length === 0 ? <div className="rounded-3xl border bg-white p-8 text-center"><Wheat className="mx-auto text-[#486957]" size={38} /><h2 className="mt-3 text-xl font-black">{data.pantry.length ? "No matching items" : "Your pantry is empty"}</h2></div> : <ul className="space-y-3" aria-label="Pantry items">{filtered.map(item => <li key={item.id} className="flex items-center gap-3 rounded-3xl border bg-white p-4 shadow-sm"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#edf5db]"><Wheat size={20} /></span><div className="min-w-0 flex-1"><h2 className="truncate font-black">{item.name}</h2><p className="text-sm text-[#6d7d74]">{String(item.quantity)} {item.unit}{item.category ? ` Â· ${item.category}` : ""}</p><p className="text-xs text-[#84918a]">Version {item.version}</p></div><button aria-label={`Edit ${item.name}`} onClick={() => setDialog({ mode: "edit", item })} className="rounded-xl border p-2"><Pencil size={17} /></button><button aria-label={`Delete ${item.name}`} onClick={() => setDeleting(item)} className="rounded-xl border p-2 text-[#9a4f36]"><Trash2 size={17} /></button></li>)}</ul>}</main>
+        <main className="mt-5">{filtered.length === 0 ? <div className="rounded-3xl border bg-white p-8 text-center"><Wheat className="mx-auto text-[#486957]" size={38} /><h2 className="mt-3 text-xl font-black">{data.pantry.length ? "No matching items" : "Your pantry is empty"}</h2></div> : <ul className="space-y-3" aria-label="Pantry items">{filtered.map(item => <li key={item.id} className="flex items-center gap-3 rounded-3xl border bg-white p-4 shadow-sm"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#edf5db]"><Wheat size={20} /></span><div className="min-w-0 flex-1"><h2 className="truncate font-black">{item.name}</h2><p className="text-sm text-[#6d7d74]">{String(item.quantity)} {item.unit}{item.category ? ` · ${item.category}` : ""}</p><p className="text-xs text-[#84918a]">Version {item.version}</p></div><button aria-label={`Edit ${item.name}`} onClick={() => setDialog({ mode: "edit", item })} className="rounded-xl border p-2"><Pencil size={17} /></button><button aria-label={`Delete ${item.name}`} onClick={() => setDeleting(item)} className="rounded-xl border p-2 text-[#9a4f36]"><Trash2 size={17} /></button></li>)}</ul>}</main>
       </>
     )}
 
-    <footer className="mt-6 text-center text-xs text-[#7c8982]">API {publicEnv.apiBaseUrl} Â· App {publicEnv.appVersion}</footer>
+    <footer className="mt-6 text-center text-xs text-[#7c8982]">API {publicEnv.apiBaseUrl} · App {publicEnv.appVersion}</footer>
     {dialog && <PantryDialog mode={dialog.mode} item={dialog.item} onClose={() => setDialog(null)} onSubmit={save} />}
     {deleting && <DeleteDialog item={deleting} busy={busyDelete} onCancel={() => setDeleting(null)} onConfirm={remove} />}
   </Shell>;
@@ -189,4 +185,3 @@ export function PantryPilotApp() {
 function Shell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen p-3 sm:p-8"><div className="mx-auto min-h-[760px] max-w-lg rounded-[2.5rem] border-[6px] border-[#203a2e] bg-[#faf8f1] p-5 shadow-2xl sm:p-7">{children}</div></div>;
 }
-
