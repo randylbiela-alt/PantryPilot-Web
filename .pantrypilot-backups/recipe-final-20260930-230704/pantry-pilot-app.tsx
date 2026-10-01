@@ -30,7 +30,6 @@ import { PantryDialog } from "./pantry-dialog";
 import { DeleteDialog } from "./delete-dialog";
 import { GroceryListScreen } from "./grocery-list-screen";
 import { MealPlannerScreen } from "./meal-planner-screen";
-import { RecipeListScreen } from "./recipe-list-screen";
 import { OnboardingWizard } from "./onboarding-wizard";
 import { ProfileScreen } from "./profile-screen";
 
@@ -52,7 +51,7 @@ export function PantryPilotApp() {
   const [deleting, setDeleting] = useState<PantryItem | null>(null);
   const [busyDelete, setBusyDelete] = useState(false);
   const [tab, setTab] = useState<
-    "pantry" | "grocery" | "meals" | "recipes" | "profile"
+    "pantry" | "grocery" | "meals" | "profile"
   >("pantry");
   const [profileSettings, setProfileSettings] =
     useState<ProfileSettings | null>(null);
@@ -389,7 +388,7 @@ export function PantryPilotApp() {
     <Shell>
       <nav
         aria-label="PantryPilot sections"
-        className="mb-5 grid grid-cols-5 gap-1 rounded-2xl bg-[#e9eee9] p-1"
+        className="mb-5 grid grid-cols-4 gap-2 rounded-2xl bg-[#e9eee9] p-1"
       >
         <button
           onClick={() => setTab("pantry")}
@@ -430,13 +429,6 @@ export function PantryPilotApp() {
         </button>
 
         <button
-          onClick={() => setTab("recipes")}
-          aria-current={tab === "recipes" ? "page" : undefined}
-          className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${tab === "recipes" ? "bg-[#315b46] text-white" : "text-[#315b46]"}`}
-        >
-          Recipes
-        </button>
-        <button
           onClick={() => {
             setTab("profile");
             void loadProfile();
@@ -476,8 +468,6 @@ export function PantryPilotApp() {
         />
       ) : tab === "meals" ? (
         <MealPlannerScreen householdId={data.activeHouseholdId} />
-      ) : tab === "recipes" ? (
-        <RecipeListScreen householdId={data.activeHouseholdId} />
       ) : tab === "profile" ? (
         profileSettings && householdSettings ? (
           <ProfileScreen
