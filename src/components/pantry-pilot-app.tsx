@@ -558,7 +558,7 @@ export function PantryPilotApp() {
               </p>
               <h1 className="mt-1 text-4xl font-black">Your pantry</h1>
               <p className="mt-2 text-sm text-[#6d7d74]">
-                Server-synced inventory ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚•{" "}
+                Server-synced inventory •{" "}
                 {data.user.displayName ?? data.user.email}
               </p>
             </div>
@@ -617,7 +617,7 @@ export function PantryPilotApp() {
                       <h2 className="truncate font-black">{item.name}</h2>
                       <p className="text-sm text-[#6d7d74]">
                         {String(item.quantity)} {item.unit}
-                        {item.category ? ` ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚• ${item.category}` : ""}
+                        {item.category ? ` • ${item.category}` : ""}
                       </p>
                       <p className="text-xs text-[#84918a]">
                         Version {item.version}
@@ -648,7 +648,7 @@ export function PantryPilotApp() {
       )}
 
       <footer className="mt-6 text-center text-xs text-[#7c8982]">
-        API {publicEnv.apiBaseUrl} ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚• App {publicEnv.appVersion}
+        API {publicEnv.apiBaseUrl} • App {publicEnv.appVersion}
       </footer>
 
       {dialog && (
