@@ -1,5 +1,0 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import { RecipeListScreen } from "./recipe-list-screen";
-vi.mock("@/lib/recipe-api", () => ({ recipeApi: { list: vi.fn().mockResolvedValue([{ id: "1", householdId: "h", name: "Chicken Tacos", description: null, servings: 4, prepMinutes: 10, cookMinutes: 20, favorite: false, tags: [], version: 1, ingredients: [{ id: "i", name: "Chicken", quantity: "1", unit: "lb" }] }]), update: vi.fn(), create: vi.fn(), delete: vi.fn() }, RecipeApiError: class extends Error {} }));
-describe("RecipeListScreen", () => { it("opens recipe details when a recipe is clicked", async () => { render(<RecipeListScreen householdId="h" />); const card = await screen.findByRole("button", { name: /Chicken Tacos/i }); fireEvent.click(card); expect(await screen.findByRole("heading", { name: "Chicken Tacos" })).toBeInTheDocument(); expect(screen.getByRole("button", { name: "Add to favorites" })).toBeInTheDocument(); expect(screen.getByRole("button", { name: /Edit/i })).toBeInTheDocument(); }); });

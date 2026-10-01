@@ -31,6 +31,7 @@ import { DeleteDialog } from "./delete-dialog";
 import { GroceryListScreen } from "./grocery-list-screen";
 import { MealPlannerScreen } from "./meal-planner-screen";
 import { RecipeListScreen } from "./recipe-list-screen";
+import { IntelligenceScreen } from "./intelligence-screen";
 import { OnboardingWizard } from "./onboarding-wizard";
 import { ProfileScreen } from "./profile-screen";
 
@@ -52,7 +53,7 @@ export function PantryPilotApp() {
   const [deleting, setDeleting] = useState<PantryItem | null>(null);
   const [busyDelete, setBusyDelete] = useState(false);
   const [tab, setTab] = useState<
-    "pantry" | "grocery" | "meals" | "recipes" | "profile"
+    "pantry" | "grocery" | "meals" | "recipes" | "intelligence" | "profile"
   >("pantry");
   const [profileSettings, setProfileSettings] =
     useState<ProfileSettings | null>(null);
@@ -389,7 +390,7 @@ export function PantryPilotApp() {
     <Shell>
       <nav
         aria-label="PantryPilot sections"
-        className="mb-5 grid grid-cols-5 gap-1 rounded-2xl bg-[#e9eee9] p-1"
+        className="mb-5 grid grid-cols-6 gap-1 rounded-2xl bg-[#e9eee9] p-1"
       >
         <button
           onClick={() => setTab("pantry")}
@@ -437,6 +438,18 @@ export function PantryPilotApp() {
           Recipes
         </button>
         <button
+          onClick={() => setTab("intelligence")}
+          aria-current={tab === "intelligence" ? "page" : undefined}
+          className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${
+            tab === "intelligence"
+              ? "bg-[#315b46] text-white"
+              : "text-[#315b46]"
+          }`}
+        >
+          Intelligence
+        </button>
+
+        <button
           onClick={() => {
             setTab("profile");
             void loadProfile();
@@ -478,6 +491,8 @@ export function PantryPilotApp() {
         <MealPlannerScreen householdId={data.activeHouseholdId} />
       ) : tab === "recipes" ? (
         <RecipeListScreen householdId={data.activeHouseholdId} />
+      ) : tab === "intelligence" ? (
+        <IntelligenceScreen householdId={data.activeHouseholdId} />
       ) : tab === "profile" ? (
         profileSettings && householdSettings ? (
           <ProfileScreen
@@ -543,7 +558,7 @@ export function PantryPilotApp() {
               </p>
               <h1 className="mt-1 text-4xl font-black">Your pantry</h1>
               <p className="mt-2 text-sm text-[#6d7d74]">
-                Server-synced inventory ·{" "}
+                Server-synced inventory ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â·{" "}
                 {data.user.displayName ?? data.user.email}
               </p>
             </div>
@@ -602,7 +617,7 @@ export function PantryPilotApp() {
                       <h2 className="truncate font-black">{item.name}</h2>
                       <p className="text-sm text-[#6d7d74]">
                         {String(item.quantity)} {item.unit}
-                        {item.category ? ` · ${item.category}` : ""}
+                        {item.category ? ` ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${item.category}` : ""}
                       </p>
                       <p className="text-xs text-[#84918a]">
                         Version {item.version}
@@ -633,7 +648,7 @@ export function PantryPilotApp() {
       )}
 
       <footer className="mt-6 text-center text-xs text-[#7c8982]">
-        API {publicEnv.apiBaseUrl} · App {publicEnv.appVersion}
+        API {publicEnv.apiBaseUrl} ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· App {publicEnv.appVersion}
       </footer>
 
       {dialog && (
