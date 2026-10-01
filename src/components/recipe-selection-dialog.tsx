@@ -1,0 +1,6 @@
+"use client";
+import { useEffect, useState } from "react";
+import { recipeApi } from "@/lib/recipe-api";
+import type { Recipe } from "@/lib/recipe-types";
+import { Button, Input } from "./ui";
+export function RecipeSelectionDialog({ householdId, onClose, onSelect }:{ householdId:string; onClose:()=>void; onSelect:(recipe:Recipe)=>void }){const[query,setQuery]=useState("");const[recipes,setRecipes]=useState<Recipe[]>([]);useEffect(()=>{const timer=setTimeout(()=>void recipeApi.list(householdId,query).then(setRecipes),150);return()=>clearTimeout(timer)},[householdId,query]);return <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4"><div className="w-full max-w-md rounded-3xl bg-[#faf8f1] p-5"><h2 className="text-2xl font-black">Select Recipe</h2><Input className="mt-4" aria-label="Search recipes" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search recipes"/><div className="mt-4 space-y-2">{recipes.map(recipe=><button key={recipe.id} onClick={()=>onSelect(recipe)} className="w-full rounded-2xl border bg-white p-3 text-left"><b>{recipe.name}</b><p className="text-sm">{recipe.ingredients.length} ingredients · {recipe.servings} servings</p></button>)}</div><Button className="mt-4 w-full" onClick={onClose}>Cancel</Button></div></div>}
