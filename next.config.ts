@@ -5,5 +5,9 @@ const allowDevAuth = process.env.NEXT_PUBLIC_ALLOW_DEV_AUTH === "true";
 if (deployment === "production" && allowDevAuth) {
   throw new Error("NEXT_PUBLIC_ALLOW_DEV_AUTH must be false for production deployments.");
 }
-const nextConfig: NextConfig = { output: "standalone", reactStrictMode: true };
+ 
+const nextConfig: NextConfig = {
+output: process.env.VERCEL ? undefined : "standalone"
+};
+
 export default nextConfig;
