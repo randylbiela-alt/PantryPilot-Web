@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -37,6 +37,7 @@ import { MonitoringScreen } from "./monitoring-screen";
 import { ForecastingScreen } from "./forecasting-screen";
 import { InventoryHistoryScreen } from "./inventory-history-screen";
 import { ConsumptionAnalyticsScreen } from "./consumption-analytics-screen";
+import { WasteAnalyticsScreen } from "./waste-analytics-screen";
 import { ResponsiveNavigation, type PantryPilotTab } from "./responsive-navigation";
 import { OnboardingWizard } from "./onboarding-wizard";
 import { ProfileScreen } from "./profile-screen";
@@ -431,6 +432,8 @@ export function PantryPilotApp() {
         <AnalyticsInsightsScreen householdId={data.activeHouseholdId} pantry={data.pantry} groceryList={data.groceryList} />
       ) : tab === "consumption" ? (
         <ConsumptionAnalyticsScreen householdId={data.activeHouseholdId} />
+      ) : tab === "waste" ? (
+        <WasteAnalyticsScreen householdId={data.activeHouseholdId} />
       ) : tab === "monitoring" ? (
         <MonitoringScreen />
       ) : tab === "forecasting" ? (
