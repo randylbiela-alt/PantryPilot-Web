@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -36,6 +36,8 @@ import { AnalyticsInsightsScreen } from "./analytics-insights-screen";
 import { MonitoringScreen } from "./monitoring-screen";
 import { ForecastingScreen } from "./forecasting-screen";
 import { InventoryHistoryScreen } from "./inventory-history-screen";
+import { ConsumptionAnalyticsScreen } from "./consumption-analytics-screen";
+import { ResponsiveNavigation, type PantryPilotTab } from "./responsive-navigation";
 import { OnboardingWizard } from "./onboarding-wizard";
 import { ProfileScreen } from "./profile-screen";
 import { NotificationCenter } from "./notification-center";
@@ -58,7 +60,7 @@ export function PantryPilotApp() {
   const [deleting, setDeleting] = useState<PantryItem | null>(null);
   const [busyDelete, setBusyDelete] = useState(false);
   const [tab, setTab] = useState<
-    "pantry" | "grocery" | "meals" | "recipes" | "intelligence" | "analytics" | "monitoring" | "forecasting" | "history" | "profile"
+    PantryPilotTab
   >("pantry");
   const [profileSettings, setProfileSettings] =
     useState<ProfileSettings | null>(null);
@@ -393,87 +395,10 @@ export function PantryPilotApp() {
 
   return (
     <Shell>
-      <nav
-        aria-label="PantryPilot sections"
-        className="mb-5 grid grid-cols-4 gap-1 rounded-2xl bg-[#e9eee9] p-1 sm:grid-cols-10"
-      >
-        <button
-          onClick={() => setTab("pantry")}
-          aria-current={tab === "pantry" ? "page" : undefined}
-          className={`flex items-center justify-center gap-1 rounded-xl px-2 py-3 font-bold ${
-            tab === "pantry"
-              ? "bg-[#315b46] text-white"
-              : "text-[#315b46]"
-          }`}
-        >
-          <ShoppingBasket size={18} />
-          Pantry
-        </button>
-
-        <button
-          onClick={() => setTab("grocery")}
-          aria-current={tab === "grocery" ? "page" : undefined}
-          className={`flex items-center justify-center gap-1 rounded-xl px-2 py-3 font-bold ${
-            tab === "grocery"
-              ? "bg-[#315b46] text-white"
-              : "text-[#315b46]"
-          }`}
-        >
-          <ClipboardList size={18} />
-          List
-        </button>
-
-        <button
-          onClick={() => setTab("meals")}
-          aria-current={tab === "meals" ? "page" : undefined}
-          className={`flex items-center justify-center gap-1 rounded-xl px-2 py-3 font-bold ${
-            tab === "meals"
-              ? "bg-[#315b46] text-white"
-              : "text-[#315b46]"
-          }`}
-        >
-          Meals
-        </button>
-
-        <button
-          onClick={() => setTab("recipes")}
-          aria-current={tab === "recipes" ? "page" : undefined}
-          className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${tab === "recipes" ? "bg-[#315b46] text-white" : "text-[#315b46]"}`}
-        >
-          Recipes
-        </button>
-        <button
-          onClick={() => setTab("intelligence")}
-          aria-current={tab === "intelligence" ? "page" : undefined}
-          className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${
-            tab === "intelligence"
-              ? "bg-[#315b46] text-white"
-              : "text-[#315b46]"
-          }`}
-        >
-          Intelligence
-        </button>
-
-        <button onClick={() => setTab("analytics")} aria-current={tab === "analytics" ? "page" : undefined} className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${tab === "analytics" ? "bg-[#315b46] text-white" : "text-[#315b46]"}`}>Analytics</button>
-        <button onClick={() => setTab("monitoring")} aria-current={tab === "monitoring" ? "page" : undefined} className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${tab === "monitoring" ? "bg-[#315b46] text-white" : "text-[#315b46]"}`}>Monitor</button>
-        <button onClick={() => setTab("forecasting")} aria-current={tab === "forecasting" ? "page" : undefined} className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${tab === "forecasting" ? "bg-[#315b46] text-white" : "text-[#315b46]"}`}>Forecast</button>
-        <button onClick={() => setTab("history")} aria-current={tab === "history" ? "page" : undefined} className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${tab === "history" ? "bg-[#315b46] text-white" : "text-[#315b46]"}`}>History</button>
-        <button
-          onClick={() => {
-            setTab("profile");
-            void loadProfile();
-          }}
-          aria-current={tab === "profile" ? "page" : undefined}
-          className={`flex items-center justify-center gap-1 rounded-xl px-2 py-3 font-bold ${
-            tab === "profile"
-              ? "bg-[#315b46] text-white"
-              : "text-[#315b46]"
-          }`}
-        >
-          <UserRound size={18} />
-          Profile
-        </button>
-      </nav>
+      <ResponsiveNavigation active={tab} onSelect={nextTab => {
+        setTab(nextTab);
+        if (nextTab === "profile") void loadProfile();
+      }} />
 
       {notice && (
         <div className="mb-4">
@@ -504,6 +429,8 @@ export function PantryPilotApp() {
         <IntelligenceScreen householdId={data.activeHouseholdId} />
       ) : tab === "analytics" ? (
         <AnalyticsInsightsScreen householdId={data.activeHouseholdId} pantry={data.pantry} groceryList={data.groceryList} />
+      ) : tab === "consumption" ? (
+        <ConsumptionAnalyticsScreen householdId={data.activeHouseholdId} />
       ) : tab === "monitoring" ? (
         <MonitoringScreen />
       ) : tab === "forecasting" ? (
