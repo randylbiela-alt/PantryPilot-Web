@@ -1,0 +1,3 @@
+"use client";
+import { AlertTriangle, ChefHat, ClipboardList, Sparkles } from "lucide-react";
+export function MobileDashboard({readiness,lowStock,expiring,recommended}:{readiness:number;lowStock:number;expiring:number;recommended:number;}){return <section className="mb-5 rounded-3xl border bg-white p-4"><h2 className="text-xl font-black">Dashboard</h2><div className="mt-4 grid grid-cols-2 gap-3"><div><Sparkles size={18}/> Readiness {readiness}%</div><div><AlertTriangle size={18}/> Low Stock {lowStock}</div><div><ClipboardList size={18}/> Expiring {expiring}</div><div><ChefHat size={18}/> Recipes {recommended}</div></div></section>}
