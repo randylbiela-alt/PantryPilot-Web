@@ -4,3 +4,6 @@
 body { margin:0; background:linear-gradient(135deg,#e6eee6,#f7f2e8,#d9e8dc); color:var(--forest); font-family:Arial,Helvetica,sans-serif; }
 button,input,select { font:inherit; }
 :focus-visible { outline:3px solid #7b9c63; outline-offset:2px; }
+
+html[data-reduce-motion="true"] *,html[data-reduce-motion="true"] *::before,html[data-reduce-motion="true"] *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}html[data-high-contrast="true"]{filter:contrast(1.18)}html[data-high-contrast="true"] :focus-visible{outline:3px solid #000!important;outline-offset:3px}html[data-large-targets="true"] button,html[data-large-targets="true"] a,html[data-large-targets="true"] input,html[data-large-targets="true"] select{min-height:44px}
+
