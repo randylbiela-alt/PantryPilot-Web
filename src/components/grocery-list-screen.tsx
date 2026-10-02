@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { Check, Pencil, Plus, Search, ShoppingCart, Trash2 } from "lucide-react";
@@ -6,6 +6,7 @@ import type { GroceryItem, GroceryList } from "@/lib/types";
 import { ApiError } from "@/lib/api";
 import { Button, Input } from "./ui";
 import { InlineAlert } from "./status";
+import { GroceryAutomation } from "./grocery-automation";
 
 export type GroceryActions = {
   createItem(name: string): Promise<void>;
@@ -80,6 +81,7 @@ export function GroceryListScreen({ list, actions }: { list: GroceryList; action
         </div>
       </div>
 
+      <GroceryAutomation existingNames={list.items.map(item => item.name)} disabled={busy} onCreate={actions.createItem} />
       <form onSubmit={addItem} className="mt-4 flex gap-2">
         <label className="flex-1"><span className="sr-only">New grocery item</span><Input value={newName} onChange={event => setNewName(event.target.value)} placeholder="Add grocery item" /></label>
         <Button disabled={busy || !newName.trim()} aria-label="Add grocery item"><Plus size={18} /></Button>
@@ -139,3 +141,4 @@ export function GroceryListScreen({ list, actions }: { list: GroceryList; action
     </section>
   );
 }
+
