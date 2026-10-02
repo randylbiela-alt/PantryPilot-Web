@@ -33,6 +33,7 @@ import { MealPlannerScreen } from "./meal-planner-screen";
 import { RecipeListScreen } from "./recipe-list-screen";
 import { IntelligenceScreen } from "./intelligence-screen";
 import { AnalyticsInsightsScreen } from "./analytics-insights-screen";
+import { MonitoringScreen } from "./monitoring-screen";
 import { OnboardingWizard } from "./onboarding-wizard";
 import { ProfileScreen } from "./profile-screen";
 import { NotificationCenter } from "./notification-center";
@@ -55,7 +56,7 @@ export function PantryPilotApp() {
   const [deleting, setDeleting] = useState<PantryItem | null>(null);
   const [busyDelete, setBusyDelete] = useState(false);
   const [tab, setTab] = useState<
-    "pantry" | "grocery" | "meals" | "recipes" | "intelligence" | "analytics" | "profile"
+    "pantry" | "grocery" | "meals" | "recipes" | "intelligence" | "analytics" | "monitoring" | "profile"
   >("pantry");
   const [profileSettings, setProfileSettings] =
     useState<ProfileSettings | null>(null);
@@ -392,7 +393,7 @@ export function PantryPilotApp() {
     <Shell>
       <nav
         aria-label="PantryPilot sections"
-        className="mb-5 grid grid-cols-4 gap-1 rounded-2xl bg-[#e9eee9] p-1 sm:grid-cols-7"
+        className="mb-5 grid grid-cols-4 gap-1 rounded-2xl bg-[#e9eee9] p-1 sm:grid-cols-8"
       >
         <button
           onClick={() => setTab("pantry")}
@@ -452,6 +453,7 @@ export function PantryPilotApp() {
         </button>
 
         <button onClick={() => setTab("analytics")} aria-current={tab === "analytics" ? "page" : undefined} className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${tab === "analytics" ? "bg-[#315b46] text-white" : "text-[#315b46]"}`}>Analytics</button>
+        <button onClick={() => setTab("monitoring")} aria-current={tab === "monitoring" ? "page" : undefined} className={`flex items-center justify-center rounded-xl px-1 py-3 text-xs font-bold ${tab === "monitoring" ? "bg-[#315b46] text-white" : "text-[#315b46]"}`}>Monitor</button>
         <button
           onClick={() => {
             setTab("profile");
@@ -498,6 +500,8 @@ export function PantryPilotApp() {
         <IntelligenceScreen householdId={data.activeHouseholdId} />
       ) : tab === "analytics" ? (
         <AnalyticsInsightsScreen householdId={data.activeHouseholdId} pantry={data.pantry} groceryList={data.groceryList} />
+      ) : tab === "monitoring" ? (
+        <MonitoringScreen />
       ) : tab === "profile" ? (
         profileSettings && householdSettings ? (
           <ProfileScreen
@@ -689,5 +693,6 @@ function Shell({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
 
 
