@@ -1,4 +1,4 @@
-﻿import { publicEnv } from "./env";
+import { publicEnv } from "./env";
 import type {
   ApiErrorBody,
   Bootstrap,
@@ -60,6 +60,7 @@ export const api = {
     method: "POST"
   }),
 
+  createInvite: (householdId: string, input: { email: string; role: "ADMIN" | "ADULT" | "MEMBER" | "READ_ONLY"; expiresInDays: number }) => request<{ id: string; email: string; role: string; expiresAt: string; inviteUrl: string }>(`/households/${householdId}/invites`, { method: "POST", body: JSON.stringify(input) }),
   signOutAll: () =>
     request<void>("/auth/sign-out-all", {
       method: "POST"

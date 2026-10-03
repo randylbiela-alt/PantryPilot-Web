@@ -42,6 +42,7 @@ import { ResponsiveNavigation, type PantryPilotTab } from "./responsive-navigati
 import { OnboardingWizard } from "./onboarding-wizard";
 import { ProfileScreen } from "./profile-screen";
 import { NotificationCenter } from "./notification-center";
+import { LoginScreen } from "./login-screen";
 
 export function PantryPilotApp() {
   const [status, setStatus] = useState<
@@ -104,6 +105,11 @@ export function PantryPilotApp() {
     }
   }, []);
 
+  useEffect(() => {
+    const handler = async () => { await api.devSession(); await load(); };
+    window.addEventListener("pantrypilot-dev-signin", handler);
+    return () => window.removeEventListener("pantrypilot-dev-signin", handler);
+  }, [load]);
   useEffect(() => {
     queueMicrotask(() => {
       void load();
@@ -358,6 +364,9 @@ export function PantryPilotApp() {
     );
   }
 
+  if (status === "error" && error instanceof ApiError && error.status === 401) {
+    return <Shell><LoginScreen /></Shell>;
+  }
   if (status === "error") {
     return (
       <Shell>
@@ -371,9 +380,7 @@ export function PantryPilotApp() {
       <Shell>
         <div className="mx-auto max-w-md rounded-3xl border bg-white p-6 text-center">
           <h1 className="text-2xl font-black">Signed out</h1>
-          <Button onClick={load} className="mt-4">
-            Sign in locally
-          </Button>
+          <LoginScreen />
         </div>
       </Shell>
     );
@@ -505,7 +512,7 @@ export function PantryPilotApp() {
               </p>
               <h1 className="mt-1 text-4xl font-black">Your pantry</h1>
               <p className="mt-2 text-sm text-[#6d7d74]">
-                Server-synced inventory ·{" "}
+                Server-synced inventory Â·{" "}
                 {data.user.displayName ?? data.user.email}
               </p>
             </div>
@@ -567,7 +574,7 @@ export function PantryPilotApp() {
                       <h2 className="truncate font-black">{item.name}</h2>
                       <p className="text-sm text-[#6d7d74]">
                         {String(item.quantity)} {item.unit}
-                        {item.category ? `· ${item.category}` : ""}
+                        {item.category ? `Â· ${item.category}` : ""}
                       </p>
                       <p className="text-xs text-[#84918a]">
                         Version {item.version}
@@ -598,7 +605,7 @@ export function PantryPilotApp() {
       )}
 
       <footer className="mt-6 text-center text-xs text-[#7c8982]">
-        API {publicEnv.apiBaseUrl} · App {publicEnv.appVersion}
+        API {publicEnv.apiBaseUrl} Â· App {publicEnv.appVersion}
       </footer>
 
       {dialog && (
