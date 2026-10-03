@@ -18,17 +18,7 @@ if (
 const nextConfig: NextConfig = {
   output: process.env.VERCEL
     ? undefined
-    : "standalone",
-
-  async rewrites() {
-    return [
-      {
-        source: "/api/v1/:slug",
-        destination:
-          "https://pantrypilot-production.up.railway.app/api/v1/:slug"
-      }
-    ];
-  }
+    : "standalone"
 };
 
 export default nextConfig;
