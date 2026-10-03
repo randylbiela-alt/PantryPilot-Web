@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/api/v1/(.*)",
-      "destination": "https://pantrypilot-production.up.railway.app/api/v1/$1"
+      "source": "/api/(.*)",
+      "destination": "https://pantrypilot-production.up.railway.app/api/$1"
     }
   ]
 }
