@@ -1,13 +1,34 @@
-import type { NextConfig } from "next";
+﻿import type { NextConfig } from "next";
 
-const deployment = process.env.NEXT_PUBLIC_DEPLOYMENT_ENV ?? "local";
-const allowDevAuth = process.env.NEXT_PUBLIC_ALLOW_DEV_AUTH === "true";
-if (deployment === "production" && allowDevAuth) {
-  throw new Error("NEXT_PUBLIC_ALLOW_DEV_AUTH must be false for production deployments.");
+const deployment =
+  process.env.NEXT_PUBLIC_DEPLOYMENT_ENV ?? "local";
+
+const allowDevAuth =
+  process.env.NEXT_PUBLIC_ALLOW_DEV_AUTH === "true";
+
+if (
+  deployment === "production" &&
+  allowDevAuth
+) {
+  throw new Error(
+    "NEXT_PUBLIC_ALLOW_DEV_AUTH must be false for production deployments."
+  );
 }
- 
+
 const nextConfig: NextConfig = {
-output: process.env.VERCEL ? undefined : "standalone"
+  output: process.env.VERCEL
+    ? undefined
+    : "standalone",
+
+  async rewrites() {
+    return [
+      {
+        source: "/api/v1/:slug",
+        destination:
+          "https://pantrypilot-production.up.railway.app/api/v1/:slug"
+      }
+    ];
+  }
 };
 
 export default nextConfig;
