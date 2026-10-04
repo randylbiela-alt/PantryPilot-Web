@@ -1,0 +1,6 @@
+﻿import { PwaRegister } from "@/components/pwa-register";
+import type { Metadata } from "next";
+import "./globals.css";
+export const metadata: Metadata = { title: "PantryPilot", description: "Local PantryPilot pantry management" };
+export default function RootLayout({ children }: Readonly<{children: React.ReactNode}>) { return <html lang="en"><body>
+        <PwaRegister />{children}</body></html>; }
