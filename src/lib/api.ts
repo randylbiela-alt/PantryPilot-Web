@@ -61,6 +61,12 @@ export const api = {
   }),
 
   createInvite: (householdId: string, input: { email: string; role: "ADMIN" | "ADULT" | "MEMBER" | "READ_ONLY"; expiresInDays: number }) => request<{ id: string; email: string; role: string; expiresAt: string; inviteUrl: string }>(`/households/${householdId}/invites`, { method: "POST", body: JSON.stringify(input) }),
+  collaboration: (householdId: string) => request<import("./collaboration-types").CollaborationSnapshot>(`/households/${householdId}/collaboration`),
+  collaborationActivity: (householdId: string, limit = 30) => request<{ items: import("./collaboration-types").ActivityItem[] }>(`/households/${householdId}/activity?limit=${limit}`),
+  updateMemberRole: (householdId: string, userId: string, role: import("./collaboration-types").HouseholdRole) => request<{ userId: string; role: string; status: string }>(`/households/${householdId}/members/${userId}`, { method: "PATCH", body: JSON.stringify({ role }) }),
+  removeMember: (householdId: string, userId: string) => request<void>(`/households/${householdId}/members/${userId}`, { method: "DELETE" }),
+  revokeInvite: (householdId: string, inviteId: string) => request<{ id: string; status: string }>(`/households/${householdId}/invites/${inviteId}/revoke`, { method: "POST", body: JSON.stringify({}) }),
+  extendInvite: (householdId: string, inviteId: string, expiresInDays = 7) => request<{ id: string; status: string; expiresAt: string }>(`/households/${householdId}/invites/${inviteId}/extend`, { method: "POST", body: JSON.stringify({ expiresInDays }) }),
   signOutAll: () =>
     request<void>("/auth/sign-out-all", {
       method: "POST"
@@ -81,6 +87,7 @@ export const api = {
   household: (householdId: string) => request<HouseholdSettings>(`/households/${householdId}`),
   updateHousehold: (householdId: string, input: { name?: string; timeZone?: string; version: number }) => request<HouseholdSettings>(`/households/${householdId}`, { method: "PATCH", body: JSON.stringify(input) })
 };
+
 
 
 
